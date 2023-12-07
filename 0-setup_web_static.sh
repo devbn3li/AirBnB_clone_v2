@@ -8,13 +8,13 @@ sudo mkdir -p /data/web_static/releases/test/
 sudo mkdir -p /data/web_static/shared/
 
 # Create a fake HTML file for testing
-sudo sh -c 'echo "<html>
+sudo echo "<html>
   <head>
   </head>
   <body>
     Holberton School
   </body>
-</html>" > /data/web_static/releases/test/index.html'
+</html>" | sudo tee /data/web_static/releases/test/index.html
 
 # Create or recreate the symbolic link
 sudo ln -sf /data/web_static/releases/test/ /data/web_static/current
