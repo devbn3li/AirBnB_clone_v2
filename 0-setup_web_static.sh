@@ -14,7 +14,7 @@ sudo sh -c 'echo "Mohamed Ezzat @ Holberton School" > /data/web_static/releases/
 
 # Create or recreate the symbolic link
 sudo rm -rf /data/web_static/current
-sudo ln -s /data/web_static/releases/test/ /data/web_static/current
+sudo ln -sf /data/web_static/releases/test/ /data/web_static/current
 
 # Give ownership of the /data/ folder to the ubuntu user and group
 sudo chown -R ubuntu:ubuntu /data/
