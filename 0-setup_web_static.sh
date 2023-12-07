@@ -10,13 +10,7 @@ sudo mkdir -p /data/web_static/releases/test/
 sudo mkdir -p /data/web_static/shared/
 
 # Create a fake HTML file for testing
-echo "<html>
-  <head>
-  </head>
-  <body>
-    Holberton School
-  </body>
-</html>" | sudo tee /data/web_static/releases/test/index.html
+sudo sh -c 'echo "Mohamed Ezzat @ Holberton School" > /data/web_static/releases/test/index.html'
 
 # Create or recreate the symbolic link
 sudo rm -rf /data/web_static/current
@@ -26,9 +20,14 @@ sudo ln -s /data/web_static/releases/test/ /data/web_static/current
 sudo chown -R ubuntu:ubuntu /data/
 
 # Update Nginx configuration
-sudo sed -i '/hbnb_static/ {s/^#//;}' /etc/nginx/sites-available/default
-sudo sed -i '/hbnb_static/ {s/alias/# alias/;}' /etc/nginx/sites-available/default
-sudo sed -i '/hbnb_static/ {s/\/data\/web_static\/current/\/data\/web_static\/current\/;/;}' /etc/nginx/sites-available/default
+sudo sh -c 'echo "server {
+    listen 80;
+    listen [::]:80 default_server;
+    server_name mohamedezzat.tech;
+    location /hbnb_static {
+        alias /data/web_static/current/;
+    }
+}" > /etc/nginx/sites-available/default'
 
 # Restart Nginx
 sudo service nginx restart
