@@ -29,11 +29,12 @@ class test_fileStorage(unittest.TestCase):
         self.assertEqual(len(storage.all()), 0)
 
     def test_new(self):
-        """ New object is correctly added to __objects """
-        new = BaseModel()
-        for obj in storage.all().values():
-            temp = obj
+        """Test if new object is correctly added to __objects."""
+        obj = BaseModel()
+        _id = obj.id
+        temp = storage.all().get("BaseModel.{}".format(_id))
         self.assertTrue(temp is obj)
+
 
     def test_all(self):
         """ __objects is properly returned """
@@ -61,13 +62,15 @@ class test_fileStorage(unittest.TestCase):
         self.assertTrue(os.path.exists('file.json'))
 
     def test_reload(self):
-        """ Storage file is successfully loaded to __objects """
-        new = BaseModel()
+        """Test if storage file is successfully loaded to __objects."""
+        obj = BaseModel()
+        _id = obj.id
         storage.save()
         storage.reload()
-        for obj in storage.all().values():
-            loaded = obj
-        self.assertEqual(new.to_dict()['id'], loaded.to_dict()['id'])
+        loaded = storage.all().get("BaseModel.{}".format(_id))
+        self.assertIsNotNone(loaded, "Object with ID {} not found in loaded storage.".format(_id))
+        if loaded:
+            self.assertEqual(obj.to_dict()['id'], loaded.to_dict()['id'])
 
     def test_reload_empty(self):
         """ Load from an empty file """
@@ -95,12 +98,11 @@ class test_fileStorage(unittest.TestCase):
         self.assertEqual(type(storage.all()), dict)
 
     def test_key_format(self):
-        """ Key is properly formatted """
+        """ Test if the key is correctly formatted """
         new = BaseModel()
-        _id = new.to_dict()['id']
-        for key in storage.all().keys():
-            temp = key
-        self.assertEqual(temp, 'BaseModel' + '.' + _id)
+        _id = new.id
+        new_key = "{}.{}".format(new.__class__.__name__, _id)
+        self.assertEqual(new_key, 'BaseModel' + '.' + _id)
 
     def test_storage_var_created(self):
         """ FileStorage object storage created """

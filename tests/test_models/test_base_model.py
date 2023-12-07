@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 """ """
+from models.amenity import Amenity
 from models.base_model import BaseModel
 import unittest
 import datetime
@@ -75,10 +76,14 @@ class test_basemodel(unittest.TestCase):
             new = self.value(**n)
 
     def test_kwargs_one(self):
-        """ """
-        n = {'Name': 'test'}
+        """Test if instantiating with kwargs works with one valid key."""
+        kwargs = {'name': 'My Amenity'}
+        amenity = Amenity(**kwargs)
+        self.assertEqual(amenity.name, 'My Amenity')
+
+        # Add a test for a non-existent key causing a KeyError
         with self.assertRaises(KeyError):
-            new = self.value(**n)
+            amenity = Amenity(**{'non_existent_key': 'some_value'})
 
     def test_id(self):
         """ """
