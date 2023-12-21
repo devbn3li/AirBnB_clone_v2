@@ -1,4 +1,3 @@
-#!/usr/bin/env bash
 # Bash script that sets up your web servers for the deployment of web_static
 # run script on both web servers.
 # checks if Nginx is not installed or not executable
