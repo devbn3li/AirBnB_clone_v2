@@ -24,3 +24,19 @@ class State(BaseModel, Base):
                 if value.state_id == self.id:
                     list_cities.append(value)
             return list_cities
+
+    def __init__(self, *args, **kwargs):
+        """initializes state"""
+        super().__init__(*args, **kwargs)
+
+    def __setattr__(self, name, value):
+        """sets attributes"""
+        if name == 'name':
+            self.name = value
+        else:
+            super().__setattr__(name, value)
+
+    def __repr__(self):
+        """returns string representation"""
+        return "[{}] ({}) {}".format(self.__class__.__name__,
+                                     self.id, self.__dict__)

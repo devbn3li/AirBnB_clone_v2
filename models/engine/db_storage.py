@@ -66,3 +66,26 @@ class DBStorage():
     def close(self):
         """Close current session"""
         self.__session.close()
+
+    def get(self, cls, id):
+        """Get object from current database session"""
+        if cls is None or id is None:
+            return None
+        else:
+            query = self.__session.query(cls).filter(cls.id == id)
+            result = query.first()
+            return result
+
+    def count(self, cls=None):
+        """Count number of objects in current database session"""
+        if cls is None:
+            query = self.__session.query(
+                State, City, User, Place, Review, Amenity)
+            result = query.count()
+            return result
+        else:
+            query = self.__session.query(cls)
+            result = query.count()
+            return result
+
+
