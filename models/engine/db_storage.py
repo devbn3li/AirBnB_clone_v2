@@ -21,6 +21,9 @@ class DBStorage():
     def __init__(self):
         """create the engine to be linked to the MySQL database
         """
+        self.__engine = create_engine('sqlite:///:memory:, echo=True')
+        Session = sessionmaker(bind=self.__engine)
+        self.__session = Session()
 
         user = os.getenv('HBNB_MYSQL_USER')
         password = os.getenv('HBNB_MYSQL_PWD')
