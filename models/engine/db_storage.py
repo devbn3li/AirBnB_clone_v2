@@ -83,8 +83,8 @@ class DBStorage():
         Session = scoped_session(session_factory)
         self.__session = Session()
 
+
     def close(self):
-        """call remove() method on the private session attribute
-        (self.__session) or close() on the class Session
-        """
-        self.__session.close()
+        """Close the session"""
+        if self.__session:
+            self.__session.close()
