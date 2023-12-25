@@ -1,91 +1,90 @@
 #!/usr/bin/python3
 """DB Storage Engine"""
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, scoped_session
-from os import getenv
+import os
 from models.base_model import Base
+from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy import create_engine
 from models.state import State
 from models.city import City
-from models.user import User
 from models.place import Place
 from models.review import Review
-from models.amenity import Amenity
+from models.user import User
 
 
 class DBStorage():
-    """DB Storage Class"""
+    """DBStorage class"""
 
     __engine = None
     __session = None
 
     def __init__(self):
-        """DBStorage Constructor"""
-        self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'
-                                      .format(getenv('HBNB_MYSQL_USER'),
-                                              getenv('HBNB_MYSQL_PWD'),
-                                              getenv('HBNB_MYSQL_HOST'),
-                                              getenv('HBNB_MYSQL_DB')),
-                                      pool_pre_ping=True)
-        if getenv('HBNB_ENV') == 'test':
+        """create the engine to be linked to the MySQL database
+        """
+
+        user = os.getenv('HBNB_MYSQL_USER')
+        password = os.getenv('HBNB_MYSQL_PWD')
+        host = os.getenv('HBNB_MYSQL_HOST')
+        database = os.getenv('HBNB_MYSQL_DB')
+        env = os.getenv("HBNB_ENV")
+
+        db_url = "mysql+mysqldb://{}:{}@{}/{}".format(
+            user, password, host, database)
+
+        engine = create_engine(db_url, pool_pre_ping=True)
+
+        self.__engine = engine
+        if env == 'test':
             Base.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):
-        """Query on current database session"""
-        if cls is None:
-            query = self.__session.query(
-                State, City, User, Place, Review, Amenity)
-            result = query.all()
-            return result
+        """query on the current database session (self.__session)
+        all objects depending of the class name (argument cls)
+        """
+        obj_list = ['User', 'State', 'City', 'Amenity', 'Place', 'Review']
+        objects = []
+
+        if cls is not None:
+            objects.extend(self.__session.query(cls).all())  # objects
         else:
-            query = self.__session.query(cls)
-            result = query.all()
-            return result
+            for item in obj_list:
+                objects.extend(self.__session.query(item).all())
+
+        dict = {}
+        for obj in objects:
+            k = f"{obj.__class__.__name__}.{obj.id}"
+            dict[k] = obj
+
+        return dict
 
     def new(self, obj):
-        """Add the object to current database session"""
-        self.__session.add(obj)
+        """add the object to the current database session (self.__session)"""
+        if obj:
+            self.__session.add(obj)
 
     def save(self):
-        """Commit all changes of current database session"""
+        """commit all changes of the current database session
+        (self.__session)
+        """
         self.__session.commit()
 
     def delete(self, obj=None):
-        """Delete from current database session"""
+        """delete from the current database session obj if not None"""
         if obj is not None:
             self.__session.delete(obj)
 
     def reload(self):
-        """Create all tables in the database"""
+        """create all tables in the database (feature of SQLAlchemy)
+        """
+
         Base.metadata.create_all(self.__engine)
-        session_factory = sessionmaker(bind=self.__engine,
-                                       expire_on_commit=False)
+        session_factory = sessionmaker(
+            bind=self.__engine, expire_on_commit=False)
         Session = scoped_session(session_factory)
         self.__session = Session()
 
     def close(self):
-        """Close current session"""
+        """call remove() method on the private session attribute
+        (self.__session) or close() on the class Session
+        """
         self.__session.close()
-
-    def get(self, cls, id):
-        """Get object from current database session"""
-        if cls is None or id is None:
-            return None
-        else:
-            query = self.__session.query(cls).filter(cls.id == id)
-            result = query.first()
-            return result
-
-    def count(self, cls=None):
-        """Count number of objects in current database session"""
-        if cls is None:
-            query = self.__session.query(
-                State, City, User, Place, Review, Amenity)
-            result = query.count()
-            return result
-        else:
-            query = self.__session.query(cls)
-            result = query.count()
-            return result
-
-
