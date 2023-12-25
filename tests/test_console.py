@@ -143,6 +143,13 @@ class TestHBNBCommand(unittest.TestCase):
             self.assertIn("'latitude': 37.77", output)
             self.assertIn("'longitude': 43.434", output)
 
+    def test_do_create_with_params(self):
+        """Test the do_create method with parameters"""
+        console = HBNBCommand()
+        console.onecmd('create BaseModel name="My_little_house" number_rooms=3 number_bathrooms=2.5')
+        self.assertIn('My little house', storage.all()['BaseModel'].name)
+        self.assertEqual(storage.all()['BaseModel'].number_rooms, 3)
+        self.assertEqual(storage.all()['BaseModel'].number_bathrooms, 2.5)
 
 if __name__ == "__main__":
     unittest.main()

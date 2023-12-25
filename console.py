@@ -113,46 +113,29 @@ class HBNBCommand(cmd.Cmd):
         """ Overrides the emptyline method of CMD """
         pass
 
-    def do_create(self, args):
-        """ Create an object of any class"""
-        try:
-            # Split the command arguments into class_name and attribute_strings
-            class_name, *attribute_strings = args.split(" ")
-        except ValueError:
-            print("** invalid syntax for create command **")
-            return
-
-        if not class_name:
+    def do_create(self, arg):
+        """Creates a new instance of a class, saves it to the storage"""
+        args = arg.split()
+        if len(args) == 0:
             print("** class name missing **")
-            return
-        elif class_name not in HBNBCommand.classes:
+        elif args[0] not in self.classes:
             print("** class doesn't exist **")
-            return
-
-        new_instance = eval(class_name)()
-
-        # Parse and set attributes
-        for attribute_string in attribute_strings:
-            key, value = attribute_string.split("=")
-            if value.startswith('"'):
-                value = value.strip('"').replace("_", " ")
-            else:
+        else:
+            new_instance = self.classes[args[0]]()
+            for param in args[1:]:
                 try:
-                    # Try to evaluate the value (handle cases like integers,
-                    # floats, etc.)
-                    value = eval(value)
-                except Exception:
-                    print(f"** coudn't evaluate {value} **")
-                    continue
-
-            # Set the attribute if it exists in the instance
-            if hasattr(new_instance, key):
-                setattr(new_instance, key, value)
-
-        # SAve the new instance
-        storage.new(new_instance)
-        print(new_instance.id)
-        new_instance.save()
+                    key, value = param.split("=")
+                    if value[0] == '"' and value[-1] == '"':
+                        value = value[1:-1].replace("_", " ").replace("\\\"", "\"")
+                    elif "." in value:
+                        value = float(value)
+                    else:
+                        value = int(value)
+                    setattr(new_instance, key, value)
+                except:
+                    pass
+            new_instance.save()
+            print(new_instance.id)
 
     def help_create(self):
         """ Help information for the create method """
