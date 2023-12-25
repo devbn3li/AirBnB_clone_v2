@@ -28,6 +28,7 @@ def c(text):
 
 
 @app.route('/python/<text>', strict_slashes=False)
+@app.route('/python/', strict_slashes=False)
 def python(text):
     """Return Python followed by text"""
 
