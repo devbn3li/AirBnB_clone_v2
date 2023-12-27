@@ -17,7 +17,7 @@ def cities_by_states():
 
 
 @app.teardown_appcontext
-def close():
+def close(self):
   """ Method to close the session """
   storage.close()
 
