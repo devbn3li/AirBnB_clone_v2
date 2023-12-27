@@ -9,18 +9,24 @@ from models.state import State
 app = Flask(__name__)
 
 
+@app.route('/', strict_slashes=False)
+def home():
+    """Displays 'Hello HBNB!'"""
+    return "Hello HBNB!"
+
+
+@app.route("/cities_by_states", strict_slashes=False)
+def cities_by_states():
+    """Displays cities per state"""
+    states = storage.all(State)
+    return render_template("8-cities_by_states.html", states=states)
+
+
 @app.teardown_appcontext
-def close(self):
-    """ Method to close the session """
+def teardown_context(ctx):
+    """Removes the current SQLAlchemy Session"""
     storage.close()
 
 
-@app.route('/cities_by_states', strict_slashes=False)
-def cities_by_states():
-    """Displays a html page with states and cities"""
-    states = storage.all(State)
-    return render_template('8-cities_by_states.html', states=states)
-
-
-if __name__ == '__main__':
-    app.run(host="0.0.0.0", port="5000")
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=5000)

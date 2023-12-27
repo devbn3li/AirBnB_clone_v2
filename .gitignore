@@ -2,3 +2,4 @@
 __pycache__
 .gitignore
 test_console-main.py
+7-dump.sql
